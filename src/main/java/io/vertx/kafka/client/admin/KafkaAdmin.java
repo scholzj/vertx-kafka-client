@@ -90,9 +90,22 @@ public interface KafkaAdmin {
                          Handler<AsyncResult<Void>> completionHandler);
 
   /**
-   * Closes the underlying connection to Zookeeper. It is required to call the method for cleanup
-   * purposes if AdminUtils was not created with autoClose set to true.
-   * @param completionHandler vert.x callback
+   * Close the admin client
+   */
+  void close();
+
+  /**
+   * Close the admin client
+   *
+   * @param completionHandler handler called on operation completed
    */
   void close(Handler<AsyncResult<Void>> completionHandler);
+
+  /**
+   * Close the admin client
+   *
+   * @param timeout timeout (milliseconds) to wait for closing
+   * @param completionHandler handler called on operation completed
+   */
+  void close(long timeout, Handler<AsyncResult<Void>> completionHandler);
 }

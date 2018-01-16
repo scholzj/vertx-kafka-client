@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.admin.AdminClient;
@@ -122,10 +123,38 @@ public class KafkaAdminImpl implements KafkaAdmin {
     });
   }
 
-  public void close(Handler<AsyncResult<Void>> completionHandler) {
+  @Override
+  public void close() {
     vertx.executeBlocking(future -> {
       adminClient.close();
-      completionHandler.handle(Future.succeededFuture());
+      future.complete();
+    }, r -> {});
+  }
+
+  @Override
+  public void close(Handler<AsyncResult<Void>> completionHandler) {
+    vertx.executeBlocking(future -> {
+      try {
+        adminClient.close();
+        completionHandler.handle(Future.succeededFuture());
+      }
+      catch (Exception e) {
+        completionHandler.handle(Future.failedFuture(e.getLocalizedMessage()));
+      }
+      future.complete();
+    }, r -> {});
+  }
+
+  @Override
+  public void close(long timeout, Handler<AsyncResult<Void>> completionHandler) {
+    vertx.executeBlocking(future -> {
+      try {
+        adminClient.close(timeout, TimeUnit.MILLISECONDS);
+        completionHandler.handle(Future.succeededFuture());
+      }
+      catch (Exception e) {
+        completionHandler.handle(Future.failedFuture(e.getLocalizedMessage()));
+      }
       future.complete();
     }, r -> {});
   }
